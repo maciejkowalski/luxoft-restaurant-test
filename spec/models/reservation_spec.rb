@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe Reservation, :type => :model do
   pending "add some examples to (or delete) #{__FILE__}"
 
+  it { should validate_presence_of(:table_id) }
+
   describe 'validations' do
     it 'checks availability' do
       Reservation.create!(from_time: (Time.now - 2.hours), to_time: (Time.now - 1.hours))
