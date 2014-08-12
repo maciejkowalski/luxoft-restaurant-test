@@ -2,6 +2,8 @@ class Reservation < ActiveRecord::Base
   belongs_to :table
 
   validates :table_id, presence: true
+  validates :from_time, presence: true
+  validates :to_time, presence: true
   validate :check_availability
 
   private
