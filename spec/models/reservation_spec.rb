@@ -6,14 +6,39 @@ RSpec.describe Reservation, :type => :model do
 
   describe 'validations' do
     let!(:table) { FactoryGirl.create(:table) }
+    let!(:tomorrow) { Time.now + 1.day }
+
+    context 'future dates' do
+      context 'when given are future timestamps' do
+
+        it 'allows to create reservation' do
+          reservation = Reservation.new(
+            from_time: tomorrow + 1.hours,
+            to_time: tomorrow + 2.hours,
+            table_id: table.id
+          )
+          expect(reservation.save).to eq(true)
+        end
+      end
+
+      context 'when given are current day timestamps' do
+        it "doesn't allow to create reservation" do
+        end
+      end
+
+      context 'when given are past day timestamps' do
+        it "doesn't allow to create reservation" do
+        end
+      end
+    end
 
     context '#from_time validation' do
 
       context 'when from_time is earlier than to_time' do
         it 'allows to create Reservation' do
           reservation = Reservation.new(
-            from_time: Time.now + 1.day + 1.hour,
-            to_time: Time.now + 1.day + 2.hour,
+            from_time: tomorrow + 1.hour,
+            to_time: tomorrow + 2.hour,
             table_id: table.id
           )
           expect(reservation.save).to eq(true)
@@ -23,8 +48,8 @@ RSpec.describe Reservation, :type => :model do
       context 'when from_time is later than to_time' do
         let(:reservation_params) do
           {
-            from_time: Time.now + 1.day + 3.hour,
-            to_time: Time.now + 1.day + 2.hour,
+            from_time: tomorrow + 3.hour,
+            to_time: tomorrow + 2.hour,
             table_id: table.id
           }
         end
@@ -43,11 +68,12 @@ RSpec.describe Reservation, :type => :model do
     end
 
     context 'time availability' do
+      let(:day_after_tomorrow) { tomorrow + 1.day }
 
       let(:reservation_params) do
         {
-          from_time: (Time.now - 2.hours),
-          to_time: (Time.now + 2.hours),
+          from_time: (day_after_tomorrow - 2.hours),
+          to_time: (day_after_tomorrow + 2.hours),
           table_id: table.id
         }
       end
@@ -65,29 +91,29 @@ RSpec.describe Reservation, :type => :model do
 
           duplicated_reservation1 = described_class.new({
             table_id: table.id,
-            from_time: (Time.now - 1.hours),
-            to_time: (Time.now + 1.hours)
+            from_time: (day_after_tomorrow - 1.hours),
+            to_time: (day_after_tomorrow + 1.hours)
           })
           expect(duplicated_reservation1.save).to eq(false)
 
           duplicated_reservation2 = described_class.new({
             table_id: table.id,
-            from_time: (Time.now - 3.hours),
-            to_time: (Time.now + 1.hours)
+            from_time: (day_after_tomorrow - 3.hours),
+            to_time: (day_after_tomorrow + 1.hours)
           })
           expect(duplicated_reservation2.save).to eq(false)
 
           duplicated_reservation3 = described_class.new({
             table_id: table.id,
-            from_time: (Time.now - 1.hours),
-            to_time: (Time.now + 3.hours)
+            from_time: (day_after_tomorrow - 1.hours),
+            to_time: (day_after_tomorrow + 3.hours)
           })
           expect(duplicated_reservation3.save).to eq(false)
 
           duplicated_reservation4 = described_class.new({
             table_id: table.id,
-            from_time: (Time.now - 3.hours),
-            to_time: (Time.now + 3.hours)
+            from_time: (day_after_tomorrow - 3.hours),
+            to_time: (day_after_tomorrow + 3.hours)
           })
           expect(duplicated_reservation4.save).to eq(false)
         end
@@ -100,15 +126,15 @@ RSpec.describe Reservation, :type => :model do
         it 'allows to create reservation' do
           correct_reservation = described_class.new({
             table_id: table.id,
-            from_time: (Time.now - 4.hours),
-            to_time: (Time.now - 3.hours)
+            from_time: (day_after_tomorrow - 4.hours),
+            to_time: (day_after_tomorrow - 3.hours)
           })
           expect(correct_reservation.save).to eq(true)
 
           correct_reservation2 = described_class.new({
             table_id: table.id,
-            from_time: (Time.now + 3.hours),
-            to_time: (Time.now + 4.hours)
+            from_time: (day_after_tomorrow + 3.hours),
+            to_time: (day_after_tomorrow + 4.hours)
           })
           expect(correct_reservation2.save).to eq(true)
 
