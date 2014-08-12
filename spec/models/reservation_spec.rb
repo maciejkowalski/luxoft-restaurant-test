@@ -8,7 +8,7 @@ RSpec.describe Reservation, :type => :model do
     let!(:table) { FactoryGirl.create(:table) }
     let!(:tomorrow) { Time.now + 1.day }
 
-    context 'future dates' do
+    context 'future days' do
       context 'when given are future timestamps' do
 
         it 'allows to create reservation' do
