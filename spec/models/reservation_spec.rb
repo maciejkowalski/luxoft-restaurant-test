@@ -23,11 +23,23 @@ RSpec.describe Reservation, :type => :model do
 
       context 'when given are current day timestamps' do
         it "doesn't allow to create reservation" do
+          reservation = Reservation.new(
+            from_time: Time.now + 1.hours,
+            to_time: Time.now + 2.hours,
+            table_id: table.id
+          )
+          expect(reservation.save).to eq(false)
         end
       end
 
       context 'when given are past day timestamps' do
         it "doesn't allow to create reservation" do
+          reservation = Reservation.new(
+            from_time: Time.now - 1.day + 1.hours,
+            to_time: Time.now - 1.day + 2.hours,
+            table_id: table.id
+          )
+          expect(reservation.save).to eq(false)
         end
       end
     end
