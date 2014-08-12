@@ -16,6 +16,11 @@ RSpec.describe Reservation, :type => :model do
     let!(:reservation) { Reservation.create!(reservation_params) }
 
     context 'when table is reservated already in given period of time' do
+      # invalid periods:
+      # A a1 b1 B #1
+      # a1 A b1 B #2
+      # A a1 B b1 #3
+      # a1 A B b1 #4
       it "doesn't allow to create reservation" do
         duplicated_reservation = described_class.new(reservation_params)
         expect(duplicated_reservation.save).to eq(false)
@@ -51,6 +56,9 @@ RSpec.describe Reservation, :type => :model do
     end
 
     context 'when table is not reservated in given period of time' do
+      # correct periods:
+      # a1 b1 A B #1
+      # A B a1 b1 #2
       it 'allows to create reservation' do
         correct_reservation = described_class.new({
           table_id: table.id,
