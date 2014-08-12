@@ -5,6 +5,7 @@ class Reservation < ActiveRecord::Base
   validates :from_time, presence: true
   validates :to_time, presence: true
   validate :check_availability
+  validate :validate_time_period
 
   private
 
@@ -14,6 +15,12 @@ class Reservation < ActiveRecord::Base
 
     if scope.count > 0
       errors.add(:availability, "please select other time period, current is already reserved")
+    end
+  end
+
+  def validate_time_period
+    if self.from_time >= self.to_time
+      errors.add(:from_time, 'from time should be earlier than to time')
     end
   end
 
