@@ -4,10 +4,20 @@ class Reservation < ActiveRecord::Base
   validates :table_id, presence: true
   validates :from_time, presence: true
   validates :to_time, presence: true
+
   validate :check_availability
   validate :validate_time_period
+  validate :only_future_dates
 
   private
+
+  def only_future_dates
+    day_of_the_year = Time.now.strftime("%j")
+    if self.to_time.strftime("%j") <= day_of_the_year || self.to_time.strftime("%j") <= day_of_the_year
+      errors.add(:from_time, "we accept only future time periods")
+      errors.add(:to_time, "we accept only future time periods")
+    end
+  end
 
   def check_availability
     scope = Reservation.joins(:table).where(table_id: self.table_id)
